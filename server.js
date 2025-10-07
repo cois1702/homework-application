@@ -1,90 +1,169 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Allow inline scripts (fix CSP issue)
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
-  );
-  next();
-});
-
-// ✅ Middleware
+// Serve frontend
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// ✅ Serve frontend files from "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ File upload setup
-const upload = multer({ dest: 'uploads/' });
+// ---------------- Persistent DB ----------------
+const DB_FILE = path.join(__dirname, 'db.json');
 
-// ✅ Path to JSON database
-const dbPath = path.join(__dirname, 'db.json');
-
-// ✅ Read tasks safely
-function readTasks() {
-  try {
-    if (!fs.existsSync(dbPath)) return [];
-    const data = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(data || '[]');
-  } catch (err) {
-    console.error("Error reading tasks:", err);
-    return [];
-  }
+function readDB() {
+    if (!fs.existsSync(DB_FILE)) return { teachers: [], tasks: [], announcements: [] };
+    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
 }
 
-// ✅ Write tasks safely
-function writeTasks(tasks) {
-  try {
-    fs.writeFileSync(dbPath, JSON.stringify(tasks, null, 2));
-  } catch (err) {
-    console.error("Error writing tasks:", err);
-  }
+function writeDB(data) {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// ✅ API Routes
+// ---------------- Teacher Routes ----------------
+// Only admins can add teachers
+app.post('/register', (req, res) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.json({ error: 'Fill all fields' });
 
-// Get all tasks
-app.get('/api/task', (req, res) => {
-  const tasks = readTasks();
-  res.json(tasks);
+    const database = readDB();
+    if (database.teachers.find(t => t.email === email)) return res.json({ error: 'Email already exists' });
+
+    const newTeacher = { id: Date.now().toString(), name, email, password };
+    database.teachers.push(newTeacher);
+    writeDB(database);
+
+    res.json({ message: 'Teacher registered!' });
 });
 
-// Add new task
-app.post('/api/task', (req, res) => {
-  const tasks = readTasks();
-  const newTask = { id: Date.now(), ...req.body };
-  tasks.push(newTask);
-  writeTasks(tasks);
-  res.status(201).json(newTask);
+// Teacher login
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+    const database = readDB();
+    const user = database.teachers.find(t => t.email === email && t.password === password);
+    if (!user) return res.json({ error: 'Invalid credentials' });
+
+    res.json({ user }); // no token returned
 });
 
-// Delete a task
-app.delete('/api/task/:id', (req, res) => {
-  let tasks = readTasks();
-  tasks = tasks.filter(task => task.id !== parseInt(req.params.id));
-  writeTasks(tasks);
-  res.json({ success: true });
+// ---------------- Task Routes ----------------
+app.post('/task', (req, res) => {
+    const { grade, classLetter, subject, description, dueDate, teacher } = req.body;
+    if (!grade || !classLetter || !subject || !description || !dueDate || !teacher) return res.json({ error: 'Fill all fields' });
+
+    const database = readDB();
+    const newTask = {
+        id: Date.now().toString(),
+        grade,
+        classLetter,
+        subject,
+        description,
+        dueDate,
+        done: false,
+        teacher,
+        createdAt: new Date().toISOString()
+    };
+
+    database.tasks.push(newTask);
+    writeDB(database);
+    res.json({ message: 'Task added!' });
 });
 
-// Upload file route (optional)
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  res.json({ message: 'File uploaded successfully', file: req.file });
+app.put('/task/:id/done', (req, res) => {
+    const database = readDB();
+    const task = database.tasks.find(t => t.id === req.params.id);
+    if (!task) return res.json({ error: 'Task not found' });
+
+    task.done = !task.done;
+    writeDB(database);
+    res.json({ message: 'Task updated!' });
 });
 
-// ✅ Fallback route - serve index.html for all other paths
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.delete('/task/:id', (req, res) => {
+    const database = readDB();
+    const index = database.tasks.findIndex(t => t.id === req.params.id);
+    if (index === -1) return res.json({ error: 'Task not found' });
+
+    database.tasks.splice(index, 1);
+    writeDB(database);
+    res.json({ message: 'Task deleted!' });
 });
 
-// ✅ Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+app.get('/tasks', (req, res) => {
+    const database = readDB();
+    res.json(database.tasks);
 });
+
+// ---------------- Announcement Routes ----------------
+app.post('/announcement', (req, res) => {
+    const { grade, classLetter, message, teacher } = req.body;
+    if (!message || !grade || !classLetter || !teacher) return res.json({ error: 'Fill all fields' });
+
+    const database = readDB();
+    const newAnnouncement = {
+        id: Date.now().toString(),
+        grade,
+        classLetter,
+        message,
+        teacher,
+        createdAt: new Date().toISOString()
+    };
+
+    database.announcements.push(newAnnouncement);
+    writeDB(database);
+    res.json({ message: 'Announcement added!' });
+});
+
+app.get('/announcements', (req, res) => {
+    const database = readDB();
+    res.json(database.announcements);
+});
+
+app.delete('/announcement/:id', (req, res) => {
+    const database = readDB();
+    const index = database.announcements.findIndex(a => a.id === req.params.id);
+    if (index === -1) return res.json({ error: 'Announcement not found' });
+
+    database.announcements.splice(index, 1);
+    writeDB(database);
+    res.json({ message: 'Announcement deleted!' });
+});
+
+// ---------------- Reset Teacher Password ----------------
+app.post('/reset-password', (req, res) => {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) return res.json({ error: 'Fill all fields' });
+
+    const database = readDB();
+    const teacher = database.teachers.find(t => t.email === email);
+    if (!teacher) return res.json({ error: 'Teacher not found' });
+
+    teacher.password = newPassword;
+    writeDB(database);
+    res.json({ message: 'Password reset successfully!' });
+});
+
+// ---------------- Cleanup Old Tasks & Announcements ----------------
+function cleanupOldTasksAndAnnouncements() {
+    const database = readDB();
+    const today = new Date().toISOString().split('T')[0];
+
+    database.tasks = database.tasks.filter(t => {
+        const taskDate = new Date(t.createdAt);
+        return !isNaN(taskDate) && taskDate.toISOString().split('T')[0] >= today;
+    });
+
+    database.announcements = database.announcements.filter(a => {
+        const annDate = new Date(a.createdAt);
+        return !isNaN(annDate) && annDate.toISOString().split('T')[0] >= today;
+    });
+
+    writeDB(database);
+}
+
+setInterval(cleanupOldTasksAndAnnouncements, 24 * 60 * 60 * 1000);
+cleanupOldTasksAndAnnouncements();
+
+// ---------------- Start server ----------------
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
