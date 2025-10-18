@@ -1,0 +1,259 @@
+/* ---------- General Reset ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---------- Fonts & Body ---------- */
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px;
+}
+
+/* ---------------------------------------------------- */
+/* ---------- School Header (FIXED FOR COMPACTNESS) ---------- */
+/* ---------------------------------------------------- */
+.header {
+    /* FIX 1: Stack the logo and title vertically and center them */
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.header img {
+    /* Updated: Logo size increased 3x from 60px to 180px */
+    width: 180px;
+    height: 180px;
+    margin-right: 0;
+    margin-bottom: 5px; 
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- START OF METALLIC EFFECT CHANGES --- */
+.header h1 {
+    /* *** 1. FONT STYLE & SIZE: Change 'Arial Black' to another bold font (like Impact or Oswald) 
+       for a different look, and adjust the size for visibility. 
+    */
+    font-family: 'Arial Black', Gadget, sans-serif; 
+    font-size: 2.5rem; /* Increased size for impact */
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 0; /* Keep margin reset */
+
+    /* *** 2. COLOR GRADIENT (THE METALLIC EFFECT): 
+       This gradient is now set to a rich, dark blue metallic color scheme.
+       The colors transition from a bright blue highlight to a deep blue core.
+    */
+    background: linear-gradient(180deg, 
+        #E0FFFF 0%,        /* Bright Highlight (Light Cyan) */
+        #6DA0C4 25%,       /* Medium Blue Tone */
+        #29688F 45%,       /* Deeper Blue Tone */
+        #0B354C 55%,       /* Dark Blue Core (The depth of the metal) */
+        #29688F 75%,
+        #6DA0C4 95%,
+        #E0FFFF 100%);     /* Bottom Highlight */
+    
+    /* These properties apply the gradient to the text itself and MUST be kept */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; /* Standard property */
+    color: transparent; /* Required for the clipping to work */
+    
+    /* *** 3. TEXT SHADOW / GLOW: Adjust these values to change the glow and depth. */
+    text-shadow: 
+        0 0 8px rgba(173, 216, 230, 0.6), /* Pale Blue Inner Glow */
+        0 5px 15px rgba(0, 0, 0, 0.6);    /* Deeper drop shadow for depth */
+    letter-spacing: 2px;
+}
+/* --- END OF METALLIC EFFECT CHANGES --- */
+
+
+/* ---------- View Panels ---------- */
+.view {
+    width: 100%;
+    max-width: 380px;
+    /* compact panel */
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Headings */
+.view h1,
+.view h2,
+.view h3,
+.view h4 {
+    margin-bottom: 12px;
+    color: #444;
+}
+
+/* ---------- Inputs & Dropdowns ---------- */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.3);
+    outline: none;
+}
+
+/* Placeholder color */
+::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* ---------- Buttons ---------- */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    background: linear-gradient(135deg, #4CAF50, #43A047);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #43A047, #388E3C);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Logout Button */
+#logoutBtn {
+    background: linear-gradient(135deg, #E74C3C, #C0392B);
+}
+
+#logoutBtn:hover {
+    background: linear-gradient(135deg, #C0392B, #A93226);
+}
+
+/* ---------- Task & Announcement Cards (Updated to include teacher cards) ---------- */
+.task-card,
+.announcement-card,
+.teacher-task-card,
+.teacher-announcement-card,
+.teacher-upload-card,
+.upload-card {
+    background-color: #fff;
+    padding: 10px 12px;
+    margin: 6px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.task-card:hover,
+.announcement-card:hover,
+.teacher-task-card:hover,
+.teacher-announcement-card:hover,
+.teacher-upload-card:hover,
+.upload-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Delete buttons (Specific override for small delete buttons) */
+.delete-btn {
+    width: auto !important;
+    background-color: #FF6B6B !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: none !important;
+    transform: none !important;
+    display: inline-block;
+    float: right;
+    margin-top: 0;
+}
+
+.delete-btn:hover {
+    background-color: #FF4757 !important;
+    transform: none !important;
+}
+
+
+/* ---------- Labels ---------- */
+label {
+    display: block;
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Specific styling for the "Login Type" label to make it bigger and bolder */
+label[for="loginType"] {
+    font-size: 16px; 
+    font-weight: 800; 
+}
+
+/* ---------- Done Task ---------- */
+.done {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+    .header img {
+        /* Adjusted for smaller screen (Increased from 50px to 120px) */
+        height: 120px;
+        width: 120px;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .header h1 {
+        /* Adjusted for smaller screen */
+        font-size: 1.8rem; /* Adjusted for metallic effect to look better on mobile */
+    }
+
+    .view {
+        max-width: 90%;
+        padding: 15px;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        font-size: 12px;
+        padding: 6px;
+    }
+}

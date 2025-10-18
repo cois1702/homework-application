@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+       
+    <meta charset="UTF-8" />
+       
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Homework Planner</title>
+       
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+        <div class="header">
+                <img id="schoolLogo" src="uploads/default_logo.png" alt="School Logo" width="100" />
+        <h1 id="schoolNameHeader">Homework Planner</h1>
+            </div>
+
+        <div id="loginView" class="view">
+                <label for="loginType">Login Type:</label>
+                <select id="loginType" onchange="toggleLoginFields()">
+            <option value="student">Student/Parent</option>
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+        </select>
+
+                <div id="studentLoginFields">
+                        <select id="studentGrade"></select>
+                        <select id="studentClass"></select>
+                    </div>
+
+                <div id="teacherLoginFields" style="display:none;">
+                        <input id="username" placeholder="Email" />
+            <input id="password" type="password" placeholder="Password" />
+        </div>
+
+                <div id="adminLoginFields" style="display:none;">
+                        <input id="adminUsername" placeholder="Admin Username" />
+            <input id="adminPassword" type="password" placeholder="Password" />
+        </div>
+
+                <button onclick="login()">Login</button>
+                <p id="loginMessage"></p>
+            </div>
+
+        <div id="teacherView" class="view" style="display:none;">
+                <h2 id="welcomeTeacher"></h2>
+                <button onclick="logout()">Logout</button>
+
+                <section>
+                        <h3>Add New Task</h3>
+                        <input id="subject" placeholder="Subject" />
+            <textarea id="description" placeholder="Task Description"></textarea>
+                        <select id="grade"></select>
+                        <select id="classLetter"></select>
+                        <input id="dueDate" type="date" />
+            <button onclick="addTask()">Save Task</button>
+                    </section>
+
+                <section>
+                        <h3>Your Existing Tasks (for Deletion)</h3>
+                        <div id="teacherTasksList">
+                                <p>Loading tasks...</p>
+                            </div>
+                    </section>
+
+                <section>
+                        <h3>Add New Announcement</h3>
+                        <textarea id="announcementText" placeholder="Announcement"></textarea>
+                        <select id="announcementGrade"></select>
+                        <select id="announcementClass"></select>
+                       
+            <!-- NEW: Calendar input for announcement expiry date -->
+                        <input id="announcementExpiryDate" type="date" placeholder="Expiry Date" />
+            <button onclick="addAnnouncement()">Save Announcement</button>
+                   
+        </section>
+
+                <section>
+                        <h3>Your Existing Announcements (for Deletion)</h3>
+                        <div id="teacherAnnouncementsList">
+                                <p>Loading announcements...</p>
+                            </div>
+                    </section>
+
+                <section>
+                        <h3>Upload File/Image</h3>
+                        <input type="file" id="fileUpload" />
+            <input id="uploadDescription" placeholder="File Description/Title" />
+            <select id="uploadGrade"></select>
+                        <select id="uploadClass"></select>
+                        <button onclick="uploadFile()">Upload File</button>
+                        <div id="filePreview"></div>
+                    </section>
+
+                <section>
+                        <h3>Your Existing Uploads (for Deletion)</h3>
+                        <div id="teacherUploadsList">
+                                <p>Loading uploads...</p>
+                            </div>
+                    </section>
+            </div>
+
+        <div id="studentView" class="view" style="display:none;">
+                <h2 id="classHeader"></h2>
+                <section>
+                        <h3>Tasks</h3>
+                        <div id="studentTasks"></div>
+                    </section>
+                <section>
+                        <h3>Announcements</h3>
+                        <div id="studentAnnouncements"></div>
+                    </section>
+                <section>
+                        <h3>Resources/Uploads</h3>
+                        <div id="studentUploads"></div>
+                    </section>
+                <button onclick="logout()">Logout</button>
+            </div>
+
+        <div id="adminView" class="view" style="display:none;">
+                <h2>Admin Dashboard</h2>
+                <button onclick="logout()">Logout</button>
+
+                <section>
+                        <h3>School Info</h3>
+                        <input id="schoolName" placeholder="School Name" />
+            <input type="file" id="schoolLogoFileInput" onchange="uploadSchoolLogo()" />
+            <div id="logoPreview"></div>
+                        <button onclick="saveSchoolInfo()">Save School Info</button>
+                    </section>
+
+                <section>
+                        <h3>Manage Teachers</h3>
+                        <h4>Add Teacher</h4>
+                        <input id="newTeacherName" placeholder="Name" />
+            <input id="newTeacherEmail" placeholder="Email" />
+            <input id="newTeacherPassword" placeholder="Password" />
+            <button onclick="addTeacher()">Add Teacher</button>
+
+                        <h4>Delete Teacher</h4>
+                        <select id="deleteTeacherSelect"></select>
+                        <button onclick="deleteTeacher()">Delete Selected</button>
+
+                        <h4>Reset Teacher Password</h4>
+                        <select id="resetTeacherSelect"></select>
+                        <input id="resetTeacherPassword" placeholder="New Password" />
+            <button onclick="resetTeacherPassword()">Reset Password</button>
+                    </section>
+            </div>
+
+        <script src="script.js"></script>
+</body>
+
+</html>
